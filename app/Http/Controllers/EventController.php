@@ -251,11 +251,7 @@ class EventController extends Controller{
                 'max_participants' => 'required|integer|min:1',
                 'status' => 'sometimes|nullable|in:draft,published,cancelled,completed',
                 'is_featured' => 'nullable|boolean',
-                
-                // Logic Validasi Hybrid:
-                // image: wajib file gambar (jpeg,png,dll) max 2MB
                 'image' => 'sometimes|file|image|mimes:jpeg,png,jpg,gif|max:2048',
-                // image_url: opsional string url biasa
                 'image_url' => 'nullable|string',
             ]);
 
@@ -268,15 +264,15 @@ class EventController extends Controller{
             }
 
             // 2. Logic Hybrid Image (Link vs Upload)
-            // Default: Ambil dari input link (image_url)
+    
             $imageUrl = $request->image_url; 
 
-            // Prioritas: Jika ada file yang diupload, kita timpa $imageUrl
+       
             if ($request->hasFile('image')) {
-                // Simpan ke storage/app/public/events
+     
                 $path = $request->file('image')->store('events', 'public');
                 
-                // Generate URL publik (misal: /storage/events/namafile.jpg)
+  
                 $imageUrl = Storage::url($path); 
             }
 
@@ -292,13 +288,11 @@ class EventController extends Controller{
                 'address' => $request->address,
                 'price' => $request->price ?? 0,
                 'max_participants' => $request->max_participants,
-                'available_tickets' => $request->max_participants, // Biasanya sama dengan max saat dibuat
+                'available_tickets' => $request->max_participants, 
                 
-                // PENTING: Gunakan variabel $imageUrl hasil logic di atas
+
                 'image_url' => $imageUrl, 
                 
-                // Gunakan auth()->id() untuk mengambil ID user yang sedang login
-                // Fallback ke 1 jika null (hanya untuk dev, sebaiknya dihapus saat production)
                 'organizer_id' => auth()->id ?? 1, 
                 'is_featured' => $request->is_featured ?? false,
                 'status' => $request->status ?? 'draft',
@@ -311,16 +305,15 @@ class EventController extends Controller{
             ], 201);
 
         } catch (Exception $e) {
-            // Log error untuk debugging developer
+
             Log::error('Failed to create event: ' . $e->getMessage(), [
-                'request' => $request->except(['image']), // Jangan log file binary agar log tidak penuh
+                'request' => $request->except(['image']),
                 'trace' => $e->getTraceAsString()
             ]);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to create event',
-                // Tampilkan error asli hanya jika mode debug nyala (aman untuk production)
                 'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
             ], 500);
         }

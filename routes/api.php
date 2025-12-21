@@ -37,7 +37,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Booking
     Route::post('/bookings', [BookingController::class, 'store']);
-    Route::get('/bookings/{id}', [BookingController::class, 'BookingById']);
 
 
     // Payment
@@ -54,6 +53,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/events/{id}', [EventController::class, 'destroy']);
         Route::put('/events/{id}', [EventController::class, 'update']);
         Route::get('/events/dashboard/stats', [EventController::class, 'stats']);
+
+        // Booking Admin/EO
+        Route::get('/bookings/{id}', [BookingController::class, 'getBookingById']);
     });
 
 });

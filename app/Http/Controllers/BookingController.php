@@ -230,20 +230,24 @@ class BookingController extends Controller
         ]);
     }
 
-    public function myBookingById(Request $request, int $id): JsonResponse{
+    public function getBookingById(Request $request, int $id): JsonResponse
+    {
         $user = $request->user();
         if (!$user) {
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
-        if (($user->role ?? null) !== 'user') {
+        if (($user->role ?? null) !== 'admin') {
             return response()->json(['message' => 'Forbidden.'], 403);
         }
 
         $booking = Booking::query()
             ->whereKey($id)
-            ->where('user_id', $user->id)
-            ->with(['event', 'latestTransaction'])
+            ->with([
+                'event',
+                'latestTransaction',
+                'user', 
+            ])
             ->first();
 
         if (!$booking) {
@@ -255,9 +259,6 @@ class BookingController extends Controller
         return response()->json([
             'message' => 'Booking retrieved successfully',
             'data' => $booking,
-            'links' => [
-                'pay' => '/api/bookings/' . $booking->id . '/pay',
-            ],
         ]);
     }
 

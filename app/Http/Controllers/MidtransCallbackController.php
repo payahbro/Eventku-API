@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 
 class MidtransCallbackController extends Controller{
 
+    
     public function handle(Request $request): JsonResponse{
         $payload = $request->all();
 
