@@ -30,6 +30,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // User
     Route::get('/me', [UserController::class, 'me']);
+    Route::put('/me', [UserController::class, 'updateMe']);
+    Route::delete('/me', [UserController::class, 'destroyMe']);
     Route::get('/my-events/stats', [UserController::class, 'stats']);
     Route::get('/my-events', [UserController::class, 'myEvents']);
     Route::get('/my-tickets', [TicketController::class, 'myTickets']);

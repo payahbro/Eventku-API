@@ -26,6 +26,54 @@ class UserController extends Controller
         ], 200);
     }
 
+    public function updateMe(Request $request)
+    {
+        $user = $request->user();
+
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string|min:3|max:50',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation errors',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $user->username = $request->input('username');
+        $user->save();
+
+        return response()->json([
+            'data' => [
+                'id' => $user->id,
+                'email' => $user->email,
+                'username' => $user->username,
+                'role' => $user->role,
+                'phone' => $user->phone,
+                'profile_picture' => $user->profile_picture,
+                'created_at' => optional($user->created_at)->toIso8601ZuluString(),
+                'updated_at' => optional($user->updated_at)->toIso8601ZuluString(),
+            ],
+        ], 200);
+    }
+
+    public function destroyMe(Request $request)
+    {
+        $user = $request->user();
+
+        // revoke token biar sesi API langsung mati
+        if (method_exists($user, 'tokens')) {
+            $user->tokens()->delete();
+        }
+
+        $user->delete();
+
+        return response()->json([
+            'message' => 'User deleted',
+        ], 200);
+    }
+
     public function stats(Request $request){
         $user = $request->user();
 

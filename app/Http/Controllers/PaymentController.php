@@ -41,8 +41,7 @@ class PaymentController extends Controller{
     // 12. ambil token dan redirect_url
     // 13. update transaksi dengan token dan url
 
-    public function pay(Request $request, int $id): JsonResponse
-    {
+    public function pay(Request $request, int $id): JsonResponse{
         // 1. ambil user id
         $user = $request->user();
         if (!$user) {
