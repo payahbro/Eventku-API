@@ -14,7 +14,16 @@ use Illuminate\Support\Facades\Log;
 
 class MidtransCallbackController extends Controller{
 
-    
+    // 1. ambil payload
+    // 2. verif signature
+    // 3. cara transaksi di db
+    // 4. validasi groos amount
+    // 5. Mapping stats midtrans ke stats kita
+    // 6. cek idempotency (siapa tau pernah paid dulunya)
+    // 7. update transaksi
+    // 8. update booking
+    // 9. generate ticket (idempotent, berdasarkan missing = qty - existing)
+    // 10. return ok
     public function handle(Request $request): JsonResponse{
         $payload = $request->all();
 

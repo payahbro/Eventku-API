@@ -30,11 +30,11 @@ class PaymentController extends Controller{
     // 1. ambil user id
     // 2. cek role user
     // 3. ambil konfig dan url midtrans
-    // 4. ambil booking yg pending
+    // 4. ambil booking yg pending dari user id
     // 5. ambil event yg udh published
     // 6. cek siapa tau ada transaksi pending yg ada payment_url
     // 7. hitung nominal
-    // 8. Generate order_id unik
+    // 8. Generate order_id unik (buat payload)
     // 9. Buat transaksi dulu (pending)
     // 10. Payload Snap dan Header
     // 11. kirim request ke midtrans snap

@@ -27,7 +27,7 @@ class BookingController extends Controller
 
     public function store(Request $request): JsonResponse{
 
-        // 1
+        // 1 ambil user id
         $user = $request->user();
         if (!$user) {
             return response()->json(['message' => 'Unauthenticated.'], 401);
@@ -39,7 +39,7 @@ class BookingController extends Controller
             ], 403);
         }
 
-        // 2
+        // 2 validasi input
         $validator = Validator::make($request->all(), [
             'event_id' => 'required|integer',
             'quantity' => 'required|integer|min:1',
@@ -61,7 +61,7 @@ class BookingController extends Controller
 
         try {
             $result = DB::transaction(function () use ($eventId, $qty, $request, $user) {
-                // 3
+                // 3 cek event ada & published
                 $event = Event::query()
                     ->whereKey($eventId)
                     ->lockForUpdate()
@@ -79,7 +79,7 @@ class BookingController extends Controller
                     ];
                 }
 
-                // 4
+                // 4 cek ketersediaan tiket
                 $available = (int) ($event->available_tickets ?? 0);
 
                 // available_tickets gk boleh > max_participants
@@ -96,14 +96,14 @@ class BookingController extends Controller
                     ];
                 }
 
-                // 5
+                // 5 hitung total biaya
                 $unitPrice = (float) ($event->price ?? 0);
                 $subtotal = $unitPrice * $qty;
 
                 $serviceFee = 2000.00;
                 $grandTotal = $subtotal + $serviceFee;
 
-                // 6
+                // 6 generate booking_id unik
                 $bookingId = null;
                 for ($i = 0; $i < 5; $i++) {
                     $candidate = Booking::generateBookingId();
@@ -117,7 +117,7 @@ class BookingController extends Controller
                     throw new Exception('Failed to generate unique booking_id.');
                 }
 
-                // 7
+                // 7 simpan ke tabel bookings
                 $booking = Booking::create([
                     'booking_id' => $bookingId,
                     'event_id' => $event->id,
@@ -131,7 +131,7 @@ class BookingController extends Controller
                     'status' => 'pending',
                 ]);
 
-                // 8
+                // 8 kurangi stok tiket di tabel events
                 $event->available_tickets = $available - $qty;
                 $event->save();
 
